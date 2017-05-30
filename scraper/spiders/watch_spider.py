@@ -8,7 +8,7 @@ class WatchSpider(scrapy.Spider):
 
     def start_requests(self):
         base_url = 'http://watch.xbiao.com/p{}_s0.html'
-        urls = [base_url.format(i) for i in range(1, 2)] # 1393
+        urls = [base_url.format(i) for i in range(1, 10)] # 1393
         for url in urls:
             yield scrapy.Request(url, callback=self.parse)
 
