@@ -1,14 +1,15 @@
 import scrapy
-from scraper.items import Dictionary, Movement
+from scraper.items import Dictionary, Movement, Brand
 from scrapy.loader import ItemLoader
 import re
 
 class WatchSpider(scrapy.Spider):
     name = "watch"
+    f = open('../log/log.txt', 'a', encoding='utf8')
 
     def start_requests(self):
         base_url = 'http://watch.xbiao.com/p{}_s0.html'
-        urls = [base_url.format(i) for i in range(1, 10)] # 1393
+        urls = [base_url.format(i) for i in range(1, 2)] # 1393
         for url in urls:
             yield scrapy.Request(url, callback=self.parse)
 
@@ -30,6 +31,7 @@ class WatchSpider(scrapy.Spider):
         """Detail pages"""
         watch_obj = Dictionary()
         mm_obj = Movement()
+        brand_obj = Brand()
         has_href = False
         cut_number = re.compile(r'\d+')
         cut_float = re.compile(r'(\d+(\.\d){0,1})')
@@ -40,10 +42,17 @@ class WatchSpider(scrapy.Spider):
                 lis = ul.css('li')
                 # 基本信息
                 if index is 0:
-                    watch_obj['number'] = lis[0].css('::text')[1].extract().strip()
-                    watch_obj['brand'] = lis[1].css('::text')[1].extract().strip()
-                    watch_obj['series'] = lis[2].css('::text')[1].extract().strip()
-                    watch_obj['sex'] = lis[4].css('::text')[1].extract().strip()
+                    for li in lis:
+                        key = li.css('::text').extract_first().strip()
+                        value = li.css('::text')[1].extract().strip()
+                        if key.startswith('编号'):
+                            watch_obj['number'] = value
+                        elif key.startswith('品牌'):
+                            watch_obj['brand'] = value
+                        elif key.startswith('系列'):
+                            watch_obj['series'] = value
+                        elif key.startswith('性别'):
+                            watch_obj['sex'] = value
                 # 价格
                 elif index is 1:
                     price_types = ['cny', 'euro', 'dollor', 'hkd']
@@ -167,12 +176,24 @@ class WatchSpider(scrapy.Spider):
                     else:
                         watch_obj['diving_depth'] = 0
             except Exception as e:
+                self.f.write('Detail: ' + str(e) + ' ' + response.url)
                 print('Detail:', e, response.url)
                 continue
         # 功能
         feature_list = response.css('.func-list span::text').extract()
         watch_obj['feature'] = ",".join(feature_list)
         watch_obj['mm_obj'] = mm_obj
+        bintro = response.css('.bintro')[0]
+        brand_obj['img_uri'] = bintro.css('dt img::attr(src)').extract_first()
+        b_lis = bintro.css('.plogo li')
+        for b_li in b_lis[0:2]:
+            key = b_li.css("::text")[0].extract().strip()
+            value = b_li.css("::text")[1].extract().strip()
+            if key.startswith('中文'):
+                brand_obj['name'] = value
+            elif key.startswith('英文'):
+                brand_obj['name_en'] = value
+        watch_obj['brand_obj'] = brand_obj
         # 若机芯类型有detail页,则需要follow detail page获取其更详细的数据
         if has_href is True:
             request = scrapy.Request(href, callback=self.parseMovement)

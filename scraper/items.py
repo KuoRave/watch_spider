@@ -41,6 +41,8 @@ class Dictionary(scrapy.Item):
     diving_depth = scrapy.Field(serializer=int)
     feature = scrapy.Field(serializer=str)
     mm_obj = scrapy.Field()
+    brand_obj = scrapy.Field()
+    brand_id = scrapy.Field()
 
 class Movement(scrapy.Item):
     """Watch Movement"""
@@ -60,4 +62,10 @@ class Movement(scrapy.Item):
     wobbler = scrapy.Field(serializer=str)
     hairspring = scrapy.Field(serializer=str)
     suspension = scrapy.Field(serializer=str)
+    token = scrapy.Field(serializer=str)
     
+class Brand(scrapy.Item):
+    """Watch Brand"""
+    name = scrapy.Field(serializer=str)
+    name_en = scrapy.Field(serializer=str)
+    img_uri = scrapy.Field(serializer=str)
