@@ -1,4 +1,8 @@
-# Untrack
+# Untracked file
 **/__pycache__/**
-**/log/**
-**/image/**
+/log/**
+/images/**
+
+# tracked dir
+!/images
+!/log
