@@ -9,7 +9,7 @@ class WatchSpider(scrapy.Spider):
 
     def start_requests(self):
         base_url = 'http://watch.xbiao.com/p{}_s0.html'
-        urls = [base_url.format(i) for i in range(10, 11)] # 1393
+        urls = [base_url.format(i) for i in range(1, 1393)] # 1393
         for url in urls:
             yield scrapy.Request(url, callback=self.parse)
 
@@ -21,7 +21,10 @@ class WatchSpider(scrapy.Spider):
                 # loader = ItemLoader(item=Dictionary(), response=li)
                 try:
                     href = li.css('.watch-pic a::attr(href)').extract_first()
-                    yield scrapy.Request(href, callback=self.parseDetail)
+                    cur_page = re.search(r'p(\d+)_', response.url).group(1)
+                    request = scrapy.Request(href, callback=self.parseDetail)
+                    request.meta['page'] = cur_page
+                    yield request
                 except:
                     continue
         except:
@@ -29,6 +32,7 @@ class WatchSpider(scrapy.Spider):
 
     def parseDetail(self, response):
         """Detail pages"""
+        page = response.meta['page']
         watch_obj = Dictionary()
         mm_obj = Movement()
         brand_obj = Brand()
@@ -165,7 +169,7 @@ class WatchSpider(scrapy.Spider):
                     weight = lis[13].css('::text')[1].extract().strip()
                     weight = cut_float.search(weight)
                     if weight is not None:
-                        watch_obj['weight'] = shell_thickness.group(0)
+                        watch_obj['weight'] = weight.group(0)
                     else:
                         watch_obj['weight'] = 0
                     # 防水深度
@@ -177,7 +181,7 @@ class WatchSpider(scrapy.Spider):
                         watch_obj['diving_depth'] = 0
             except Exception as e:
                 self.f.write('Detail: ' + str(e) + ' ' + response.url)
-                print('Detail:', e, response.url)
+                print('Detail: page-', page, 'index-', index, e, response.url)
                 continue
         # 功能
         feature_list = response.css('.func-list span::text').extract()
