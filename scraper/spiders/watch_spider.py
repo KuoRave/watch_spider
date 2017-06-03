@@ -48,7 +48,9 @@ class WatchSpider(scrapy.Spider):
                 if index is 0:
                     for li in lis:
                         key = li.css('::text').extract_first().strip()
-                        value = li.css('::text')[1].extract().strip()
+                        value = '暂无'
+                        if len(li.css('::text')) > 1:
+                            value = li.css('::text')[1].extract().strip()
                         if key.startswith('编号'):
                             watch_obj['number'] = value
                         elif key.startswith('品牌'):

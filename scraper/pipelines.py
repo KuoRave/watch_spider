@@ -62,7 +62,7 @@ class ScraperPipeline(object):
             brand_obj['name'] = '暂无'
         if ('name_en' in brand_obj) is False:
             brand_obj['name_en'] = '暂无'
-        cursor.execute("SELECT id,img_uri FROM watch_brand WHERE `name`='%s' OR `name_en`='%s'" % (brand_obj['name'].replace("'", "&apos;"), brand_obj['name_en'].replace("'", "&apos;")))
+        cursor.execute("SELECT id,img_uri FROM watch_brand WHERE `name`='%s' OR `name_en`='%s'" % (brand_obj['name'].replace("'", "&apos;").replace('"', "&quot;"), brand_obj['name_en'].replace("'", "&apos;").replace('"', "&quot;")))
         brand_result = cursor.fetchone()
         if brand_result is None:
             suffix= ''
@@ -75,11 +75,11 @@ class ScraperPipeline(object):
                 with open(path + filename, 'wb') as img_file:
                     img_file.write(image.content)
                     brand_obj['img_uri'] = filename
-                brand_line.append(brand_obj['name'].replace("'", "&apos;"))
-                brand_line.append(brand_obj['name_en'].replace("'", "&apos;"))
+                brand_line.append(brand_obj['name'].replace("'", "&apos;").replace('"', "&quot;"))
+                brand_line.append(brand_obj['name_en'].replace("'", "&apos;").replace('"', "&quot;"))
                 brand_line.append('') if ('img_uri' in brand_obj) is False else brand_line.append(brand_obj['img_uri'])
                 cursor.execute(self.brandSql % tuple(brand_line))
-                cursor.execute("SELECT id FROM watch_brand WHERE `name`='%s' OR `name_en`='%s'" % (brand_obj['name'].replace("'", "&apos;"), brand_obj['name_en'].replace("'", "&apos;")))
+                cursor.execute("SELECT id FROM watch_brand WHERE `name`='%s' OR `name_en`='%s'" % (brand_obj['name'].replace("'", "&apos;").replace('"', "&quot;"), brand_obj['name_en'].replace("'", "&apos;").replace('"', "&quot;")))
                 brand_result = cursor.fetchone()
         item['brand_id'] = brand_result[0]
 
@@ -87,23 +87,23 @@ class ScraperPipeline(object):
         mm_obj = item['mm_obj']
         mm_result = None
         if 'name' in mm_obj and mm_obj['name'] != '暂无':
-            cursor.execute("SELECT id FROM watch_movement WHERE `name`='%s'" % mm_obj['name'].replace("'", "&apos;"))
+            cursor.execute("SELECT id FROM watch_movement WHERE `name`='%s'" % mm_obj['name'].replace("'", "&apos;").replace('"', "&quot;"))
             mm_result = cursor.fetchone()
         mm_line = []
-        mm_line.append('暂无') if ('name' in mm_obj) is False else mm_line.append(mm_obj['name'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('type' in mm_obj) is False else mm_line.append(mm_obj['type'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('manufacture' in mm_obj) is False else mm_line.append(mm_obj['manufacture'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('basic' in mm_obj) is False else mm_line.append(mm_obj['basic'].replace("'", "&apos;"))
+        mm_line.append('暂无') if ('name' in mm_obj) is False else mm_line.append(mm_obj['name'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('type' in mm_obj) is False else mm_line.append(mm_obj['type'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('manufacture' in mm_obj) is False else mm_line.append(mm_obj['manufacture'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('basic' in mm_obj) is False else mm_line.append(mm_obj['basic'].replace("'", "&apos;").replace('"', "&quot;"))
         mm_line.append(0) if ('diameter' in mm_obj) is False else mm_line.append(mm_obj['diameter'])
         mm_line.append(0) if ('thickness' in mm_obj) is False else mm_line.append(mm_obj['thickness'])
-        mm_line.append('暂无') if ('vibration' in mm_obj) is False else mm_line.append(mm_obj['vibration'].replace("'", "&apos;"))
+        mm_line.append('暂无') if ('vibration' in mm_obj) is False else mm_line.append(mm_obj['vibration'].replace("'", "&apos;").replace('"', "&quot;"))
         mm_line.append(0) if ('jewels' in mm_obj) is False else mm_line.append(mm_obj['jewels'])
         mm_line.append(0) if ('power_reserve' in mm_obj) is False else mm_line.append(mm_obj['power_reserve'])
-        mm_line.append('暂无') if ('introduction' in mm_obj) is False else mm_line.append(mm_obj['introduction'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('battery_life' in mm_obj) is False else mm_line.append(mm_obj['battery_life'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('wobbler' in mm_obj) is False else mm_line.append(mm_obj['wobbler'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('hairspring' in mm_obj) is False else mm_line.append(mm_obj['hairspring'].replace("'", "&apos;"))
-        mm_line.append('暂无') if ('suspension' in mm_obj) is False else mm_line.append(mm_obj['suspension'].replace("'", "&apos;"))
+        mm_line.append('暂无') if ('introduction' in mm_obj) is False else mm_line.append(mm_obj['introduction'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('battery_life' in mm_obj) is False else mm_line.append(mm_obj['battery_life'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('wobbler' in mm_obj) is False else mm_line.append(mm_obj['wobbler'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('hairspring' in mm_obj) is False else mm_line.append(mm_obj['hairspring'].replace("'", "&apos;").replace('"', "&quot;"))
+        mm_line.append('暂无') if ('suspension' in mm_obj) is False else mm_line.append(mm_obj['suspension'].replace("'", "&apos;").replace('"', "&quot;"))
         mm_line.append(0) if ('part_number' in mm_obj) is False else mm_line.append(mm_obj['part_number'])
         token = hashlib.md5(json.dumps(mm_line).encode()).hexdigest()
         if mm_result is None:
@@ -125,13 +125,13 @@ class ScraperPipeline(object):
         item['mm_id'] = mm_result[0]
 
     def dealWatch(self, cursor, item):
-        cursor.execute("SELECT id FROM watch_dictionary WHERE `number`='%s'" % item['number'].replace("'", "&apos;"))
+        cursor.execute("SELECT id FROM watch_dictionary WHERE `number`='%s'" % item['number'].replace("'", "&apos;").replace('"', "&quot;"))
         watch_result = cursor.fetchone()
         watch_line = []
         watch_line.append(0) if ('brand_id' in item) is False else watch_line.append(item['brand_id'])
-        watch_line.append('暂无') if ('series' in item) is False else watch_line.append(item['series'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('number' in item) is False else watch_line.append(item['number'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('sex' in item) is False else watch_line.append(item['sex'].replace("'", "&apos;"))
+        watch_line.append('暂无') if ('series' in item) is False else watch_line.append(item['series'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('number' in item) is False else watch_line.append(item['number'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('sex' in item) is False else watch_line.append(item['sex'].replace("'", "&apos;").replace('"', "&quot;"))
         watch_line.append(0) if ('cny' in item) is False else watch_line.append(item['cny'])
         watch_line.append('暂无') if ('cny_date' in item) is False else watch_line.append(item['cny_date'])
         watch_line.append(0) if ('euro' in item) is False else watch_line.append(item['euro'])
@@ -143,20 +143,20 @@ class ScraperPipeline(object):
         watch_line.append(0) if ('mm_id' in item) is False else watch_line.append(item['mm_id'])
         watch_line.append(0) if ('total_diameter' in item) is False else watch_line.append(item['total_diameter'])
         watch_line.append(0) if ('shell_thickness' in item) is False else watch_line.append(item['shell_thickness'])
-        watch_line.append('暂无') if ('shell_material' in item) is False else watch_line.append(item['shell_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('dial_color' in item) is False else watch_line.append(item['dial_color'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('dial_shape' in item) is False else watch_line.append(item['dial_shape'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('dial_material' in item) is False else watch_line.append(item['dial_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('glass_material' in item) is False else watch_line.append(item['glass_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('crown_material' in item) is False else watch_line.append(item['crown_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('band_color' in item) is False else watch_line.append(item['band_color'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('band_material' in item) is False else watch_line.append(item['band_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('clasp_type' in item) is False else watch_line.append(item['clasp_type'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('clasp_material' in item) is False else watch_line.append(item['clasp_material'].replace("'", "&apos;"))
-        watch_line.append('暂无') if ('back_through' in item) is False else watch_line.append(item['back_through'].replace("'", "&apos;"))
+        watch_line.append('暂无') if ('shell_material' in item) is False else watch_line.append(item['shell_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('dial_color' in item) is False else watch_line.append(item['dial_color'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('dial_shape' in item) is False else watch_line.append(item['dial_shape'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('dial_material' in item) is False else watch_line.append(item['dial_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('glass_material' in item) is False else watch_line.append(item['glass_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('crown_material' in item) is False else watch_line.append(item['crown_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('band_color' in item) is False else watch_line.append(item['band_color'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('band_material' in item) is False else watch_line.append(item['band_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('clasp_type' in item) is False else watch_line.append(item['clasp_type'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('clasp_material' in item) is False else watch_line.append(item['clasp_material'].replace("'", "&apos;").replace('"', "&quot;"))
+        watch_line.append('暂无') if ('back_through' in item) is False else watch_line.append(item['back_through'].replace("'", "&apos;").replace('"', "&quot;"))
         watch_line.append(0) if ('weight' in item) is False else watch_line.append(item['weight'])
         watch_line.append(0) if ('diving_depth' in item) is False else watch_line.append(item['diving_depth'])
-        watch_line.append('暂无') if ('feature' in item) is False else watch_line.append(item['feature'].replace("'", "&apos;"))
+        watch_line.append('暂无') if ('feature' in item) is False else watch_line.append(item['feature'].replace("'", "&apos;").replace('"', "&quot;"))
         if watch_result is None:
             try:
                 cursor.execute(self.watchSql % tuple(watch_line))
